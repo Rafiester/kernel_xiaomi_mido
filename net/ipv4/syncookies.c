@@ -253,7 +253,26 @@ bool cookie_check_timestamp(struct tcp_options_received *tcp_opt,
 	tcp_opt->snd_wscale = options & 0xf;
 	return sysctl_tcp_window_scaling != 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(cookie_check_timestamp);
+=======
+EXPORT_SYMBOL(cookie_timestamp_decode);
+
+bool cookie_ecn_ok(const struct tcp_options_received *tcp_opt,
+		   const struct net *net, const struct dst_entry *dst)
+{
+	bool ecn_ok = tcp_opt->rcv_tsecr & TS_OPT_ECN;
+
+	if (!ecn_ok)
+		return false;
+
+	if (net->ipv4.sysctl_tcp_ecn)
+		return true;
+
+	return dst_feature(dst, RTAX_FEATURE_ECN);
+}
+EXPORT_SYMBOL(cookie_ecn_ok);
+>>>>>>> 5f3886d7a164... net: allow setting ecn via routing table
 
 struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
 {
@@ -354,6 +373,10 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
 				  dst_metric(&rt->dst, RTAX_INITRWND));
 
 	ireq->rcv_wscale  = rcv_wscale;
+<<<<<<< HEAD
+=======
+	ireq->ecn_ok = cookie_ecn_ok(&tcp_opt, sock_net(sk), &rt->dst);
+>>>>>>> 5f3886d7a164... net: allow setting ecn via routing table
 
 	ret = get_cookie_sock(sk, skb, req, &rt->dst);
 	/* ip_queue_xmit() depends on our flow being setup

@@ -262,6 +262,10 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 				  dst_metric(dst, RTAX_INITRWND));
 
 	ireq->rcv_wscale = rcv_wscale;
+<<<<<<< HEAD
+=======
+	ireq->ecn_ok = cookie_ecn_ok(&tcp_opt, sock_net(sk), dst);
+>>>>>>> 5f3886d7a164... net: allow setting ecn via routing table
 
 	ret = get_cookie_sock(sk, skb, req, dst);
 out:
