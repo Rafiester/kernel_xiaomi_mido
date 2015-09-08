@@ -337,8 +337,8 @@ static ssize_t comp_algorithm_store(struct device *dev,
 static int zram_test_flag(struct zram_meta *meta, u32 index,
 			enum zram_pageflags flag)
 {
-	return meta->table[index].value & BIT(flag);
-}
+	struct zram *zram = dev_to_zram(dev);
+	struct zram_meta *meta;
 
 static void zram_set_flag(struct zram_meta *meta, u32 index,
 			enum zram_pageflags flag)
@@ -346,11 +346,9 @@ static void zram_set_flag(struct zram_meta *meta, u32 index,
 	meta->table[index].value |= BIT(flag);
 }
 
-static void zram_clear_flag(struct zram_meta *meta, u32 index,
-			enum zram_pageflags flag)
-{
-	meta->table[index].value &= ~BIT(flag);
-}
+	meta = zram->meta;
+	zs_compact(meta->mem_pool);
+	up_read(&zram->init_lock);
 
 static size_t zram_get_obj_size(struct zram_meta *meta, u32 index)
 {
@@ -376,19 +374,54 @@ static inline int is_partial_io(struct bio_vec *bvec)
 static inline int valid_io_request(struct zram *zram,
 		sector_t start, unsigned int size)
 {
-	u64 end, bound;
+	struct zram *zram = dev_to_zram(dev);
+	struct zs_pool_stats pool_stats;
+	u64 orig_size, mem_used = 0;
+	long max_used;
+	ssize_t ret;
 
-	/* unaligned request */
-	if (unlikely(start & (ZRAM_SECTOR_PER_LOGICAL_BLOCK - 1)))
-		return 0;
-	if (unlikely(size & (ZRAM_LOGICAL_BLOCK_SIZE - 1)))
-		return 0;
+	memset(&pool_stats, 0x00, sizeof(struct zs_pool_stats));
 
-	end = start + (size >> SECTOR_SHIFT);
-	bound = zram->disksize >> SECTOR_SHIFT;
-	/* out of range range */
-	if (unlikely(start >= bound || end > bound || start > end))
-		return 0;
+	down_read(&zram->init_lock);
+	if (init_done(zram)) {
+		mem_used = zs_get_total_pages(zram->meta->mem_pool);
+		zs_pool_stats(zram->meta->mem_pool, &pool_stats);
+	}
+
+	orig_size = atomic64_read(&zram->stats.pages_stored);
+	max_used = atomic_long_read(&zram->stats.max_used_pages);
+
+	ret = scnprintf(buf, PAGE_SIZE,
+			"%8llu %8llu %8llu %8lu %8ld %8llu %8lu\n",
+			orig_size << PAGE_SHIFT,
+			(u64)atomic64_read(&zram->stats.compr_data_size),
+			mem_used << PAGE_SHIFT,
+			zram->limit_pages << PAGE_SHIFT,
+			max_used << PAGE_SHIFT,
+			(u64)atomic64_read(&zram->stats.zero_pages),
+			pool_stats.num_migrated);
+	up_read(&zram->init_lock);
+
+	return ret;
+}
+
+static DEVICE_ATTR_RO(io_stat);
+static DEVICE_ATTR_RO(mm_stat);
+ZRAM_ATTR_RO(num_reads);
+ZRAM_ATTR_RO(num_writes);
+ZRAM_ATTR_RO(failed_reads);
+ZRAM_ATTR_RO(failed_writes);
+ZRAM_ATTR_RO(invalid_io);
+ZRAM_ATTR_RO(notify_free);
+ZRAM_ATTR_RO(zero_pages);
+ZRAM_ATTR_RO(compr_data_size);
+
+static inline bool zram_meta_get(struct zram *zram)
+{
+	if (atomic_inc_not_zero(&zram->refcount))
+		return true;
+	return false;
+}
 
 	/* I/O request is valid */
 	return 1;
