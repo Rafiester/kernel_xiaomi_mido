@@ -1713,7 +1713,12 @@ static struct page *isolate_source_page(struct size_class *class)
 	return page;
 }
 
-static struct page *isolate_source_page(struct size_class *class)
+/*
+ *
+ * Based on the number of unused allocated objects calculate
+ * and return the number of pages that we can free.
+ */
+static unsigned long zs_can_compact(struct size_class *class)
 {
 	unsigned long obj_wasted;
 
@@ -1833,9 +1838,7 @@ static unsigned long zs_shrinker_count(struct shrinker *shrinker,
 		if (class->index != i)
 			continue;
 
-		spin_lock(&class->lock);
 		pages_to_free += zs_can_compact(class);
-		spin_unlock(&class->lock);
 	}
 
 	return pages_to_free;
