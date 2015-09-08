@@ -1698,13 +1698,6 @@ static enum fullness_group putback_zspage(struct zs_pool *pool,
 
 static struct page *isolate_source_page(struct size_class *class)
 {
-	struct page *page;
-
-	return fullness;
-}
-
-static struct page *isolate_source_page(struct size_class *class)
-{
 	int i;
 	struct page *page = NULL;
 
@@ -1712,6 +1705,20 @@ static struct page *isolate_source_page(struct size_class *class)
 		page = class->fullness_list[i];
 		if (!page)
 			continue;
+
+		remove_zspage(page, class, i);
+		break;
+	}
+
+	return page;
+}
+
+static struct page *isolate_source_page(struct size_class *class)
+{
+	unsigned long obj_wasted;
+
+	obj_wasted = zs_stat_get(class, OBJ_ALLOCATED) -
+		zs_stat_get(class, OBJ_USED);
 
 		remove_zspage(page, class, i);
 		break;
