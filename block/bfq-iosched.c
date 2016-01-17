@@ -4991,6 +4991,18 @@ static void bfq_registered_queue(struct request_queue *q)
 		bfqd->bfq_slice_idle = 0;
 }
 
+static void bfq_registered_queue(struct request_queue *q)
+{
+	struct elevator_queue *e = q->elevator;
+	struct bfq_data *bfqd = e->elevator_data;
+
+	/*
+	 * Default to IOPS mode with no idling for SSDs
+	 */
+	if (blk_queue_nonrot(q))
+		bfqd->bfq_slice_idle = 0;
+}
+
 static void bfq_slab_kill(void)
 {
 	if (bfq_pool)
