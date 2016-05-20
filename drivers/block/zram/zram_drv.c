@@ -797,6 +797,7 @@ compress_again:
 				__GFP_KSWAPD_RECLAIM |
 				__GFP_NOWARN |
 				__GFP_HIGHMEM);
+
 	if (!handle) {
 		zcomp_strm_release(zram->comp, zstrm);
 		zstrm = NULL;
