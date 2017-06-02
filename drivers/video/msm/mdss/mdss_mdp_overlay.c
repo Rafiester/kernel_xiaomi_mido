@@ -5439,6 +5439,8 @@ static int __handle_overlay_prepare(struct msm_fb_data_type *mfd,
 		ret = __mdss_overlay_src_split_sort(mfd, sorted_ovs, num_ovs);
 		if (ret) {
 			pr_err("src_split_sort failed. ret=%d\n", ret);
+			kfree(sorted_ovs);
+			mutex_unlock(&mdp5_data->ov_lock);
 			return ret;
 		}
 	}
