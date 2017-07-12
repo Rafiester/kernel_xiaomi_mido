@@ -12,6 +12,7 @@
 #include "misc.h"
 #include "../string.h"
 #include <asm/bootparam_utils.h>
+#include <linux/compiler.h>
 
 /* WARNING!!
  * This code is compiled with -fPIC and it is relocated dynamically
@@ -110,7 +111,7 @@
 #define memzero(s, n)	memset((s), 0, (n))
 
 
-static void error(char *m);
+static void error(char *m) __noreturn;
 
 /*
  * This is set up by the setup-routine at boot-time
@@ -432,4 +433,9 @@ asmlinkage __visible void *decompress_kernel(void *rmode, memptr heap,
 		handle_relocations(output, output_len);
 	debug_putstr("done.\nBooting the kernel.\n");
 	return output;
+}
+
+void fortify_panic(const char *name)
+{
+	error("detected buffer overflow");
 }
