@@ -438,7 +438,7 @@ static void cpufreq_electron_timer(unsigned long data)
 	unsigned long flags;
 	unsigned long max_cpu;
 	int i, fcpu;
-	struct sched_load *sl;
+        struct sched_load *sl;
 	struct cpufreq_govinfo govinfo;
 	unsigned int this_hispeed_freq;
 
@@ -470,7 +470,7 @@ static void cpufreq_electron_timer(unsigned long data)
 	max_cpu = cpumask_first(ppol->policy->cpus);
 	for_each_cpu(i, ppol->policy->cpus) {
 		pcpu = &per_cpu(cpuinfo, i);
-		sl = &ppol->sl[i - fcpu];
+                sl = &ppol->sl[i - fcpu];
 		if (tunables->use_sched_load) {
 			cputime_speedadj = (u64)sl->prev_load *
 					   ppol->policy->cpuinfo.max_freq;
@@ -1558,7 +1558,7 @@ static struct cpufreq_electron_policyinfo *get_policyinfo(
 		return ERR_PTR(-ENOMEM);
 
 	sl = kcalloc(cpumask_weight(policy->related_cpus), sizeof(*sl),
-		     GFP_KERNEL);
+                     GFP_KERNEL);
 	if (!sl) {
 		kfree(ppol);
 		return ERR_PTR(-ENOMEM);
