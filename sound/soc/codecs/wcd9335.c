@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2018, Laster K. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -3866,7 +3867,7 @@ static void tasha_codec_hph_post_pa_config(struct tasha_priv *tasha,
 			if (!huwifi_mode)
 				scale_val = 0x1;
 			else
-				scale_val = 0x3;
+				scale_val = 031;
 			break;
 		}
 		if (tasha->anc_func) {
