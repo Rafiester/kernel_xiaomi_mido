@@ -17,7 +17,7 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
-#include <linux/fb.h>
+#include <linux/state_notifier.h>
 
 #define MAPLE_IOSCHED_PATCHLEVEL	(8)
 
@@ -82,15 +82,28 @@ maple_add_request(struct request_queue *q, struct request *rq)
 	struct maple_data *mdata = maple_get_data(q);
 	const int sync = rq_is_sync(rq);
 	const int dir = rq_data_dir(rq);
+<<<<<<< HEAD
 
 	/* increase expiration when device is asleep */
 	unsigned int fifo_expire_suspended = mdata->fifo_expire[sync][dir] * sleep_latency_multiple;
+=======
+>>>>>>> b516f8927e17... maple-iosched: convert to use state notifier
 
 	/*
 	 * Add request to the proper fifo list and set its
 	 * expire time.
 	 */
+<<<<<<< HEAD
 	if (mdata->display_on && mdata->fifo_expire[sync][dir]) {
+=======
+
+   	/* inrease expiration when device is asleep */
+   	unsigned int fifo_expire_suspended = mdata->fifo_expire[sync][dir] * sleep_latency_multiple;
+   	if (!state_suspended && mdata->fifo_expire[sync][dir]) {
+   		rq->fifo_time = jiffies + mdata->fifo_expire[sync][dir];
+   		list_add_tail(&rq->queuelist, &mdata->fifo_list[sync][dir]);
+   	} else if (state_suspended && fifo_expire_suspended) {
+>>>>>>> b516f8927e17... maple-iosched: convert to use state notifier
 		rq->fifo_time = jiffies + mdata->fifo_expire[sync][dir];
 		list_add_tail(&rq->queuelist, &mdata->fifo_list[sync][dir]);
 	} else if (!mdata->display_on && fifo_expire_suspended) {
@@ -218,10 +231,16 @@ maple_dispatch_requests(struct request_queue *q, int force)
 	/* Retrieve request */
 	if (!rq) {
 		/* Treat writes fairly while suspended, otherwise allow them to be starved */
+<<<<<<< HEAD
 		if (mdata->display_on &&
 		    mdata->starved >= mdata->writes_starved)
 			data_dir = WRITE;
 		else if (!mdata->display_on && mdata->starved >= 1)
+=======
+		if (!state_suspended && mdata->starved >= mdata->writes_starved)
+			data_dir = WRITE;
+		else if (state_suspended && mdata->starved >= 1)
+>>>>>>> b516f8927e17... maple-iosched: convert to use state notifier
 			data_dir = WRITE;
 
 		rq = maple_choose_request(mdata, data_dir);
