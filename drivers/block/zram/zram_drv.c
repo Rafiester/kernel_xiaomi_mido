@@ -43,6 +43,8 @@ static int zram_major;
 static struct zram *zram_devices;
 #ifdef CONFIG_CRYPTO_ZSTD
 static const char *default_compressor = "zstd";
+#elseif CONFIG_CRYPTO_LZ4
+static const char *default_compressor = "lz4";
 #else
 static const char *default_compressor = "lzo";
 #endif
