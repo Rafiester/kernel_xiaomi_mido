@@ -1713,25 +1713,6 @@ static struct page *isolate_source_page(struct size_class *class)
 	return page;
 }
 
-/*
- *
- * Based on the number of unused allocated objects calculate
- * and return the number of pages that we can free.
- */
-static unsigned long zs_can_compact(struct size_class *class)
-{
-	unsigned long obj_wasted;
-
-	obj_wasted = zs_stat_get(class, OBJ_ALLOCATED) -
-		zs_stat_get(class, OBJ_USED);
-
-		remove_zspage(page, class, i);
-		break;
-	}
-
-	return obj_wasted * class->pages_per_zspage;
-}
-
 static void __zs_compact(struct zs_pool *pool, struct size_class *class)
 {
 	struct zs_compact_control cc;
@@ -1757,6 +1738,7 @@ static void __zs_compact(struct zs_pool *pool, struct size_class *class)
 				break;
 
 			putback_zspage(pool, class, dst_page);
+
 		}
 
 		/* Stop if we couldn't find slot */
@@ -1838,7 +1820,6 @@ static unsigned long zs_shrinker_count(struct shrinker *shrinker,
 		if (class->index != i)
 			continue;
 
-		pages_to_free += zs_can_compact(class);
 	}
 
 	return pages_to_free;
