@@ -328,7 +328,7 @@ late_initcall(sched_init_debug);
  * Number of tasks to iterate in a single balance run.
  * Limited because this is done with IRQs disabled.
  */
-const_debug unsigned int sysctl_sched_nr_migrate = 32;
+const_debug unsigned int sysctl_sched_nr_migrate = 128;
 
 /*
  * period over which we average the RT time consumption, measured
@@ -1737,7 +1737,7 @@ unsigned int __read_mostly sysctl_sched_enable_colocation = 1;
  * Enable colocation for all threads in a process. The children
  * inherits the group id from the parent.
  */
-unsigned int __read_mostly sysctl_sched_enable_thread_grouping = 0;
+unsigned int __read_mostly sysctl_sched_enable_thread_grouping = 1;
 
 #ifdef CONFIG_SCHED_FREQ_INPUT
 
