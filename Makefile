@@ -640,6 +640,7 @@ KBUILD_CFLAGS   += $(call cc-disable-warning, address-of-packed-member)
 
 # Silence 'address-of-packed-member' warning
 KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
+KBUILD_CFLAGS	+= $(call cc-disable-warning, psabi)
 
 ifeq ($(cc-name),gcc)
 KBUILD_CFLAGS	+= -Wno-psabi
