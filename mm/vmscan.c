@@ -88,7 +88,8 @@ struct scan_control {
 	/* Can mapped pages be reclaimed? */
 	unsigned int may_unmap:1;
 
-	/* Can pages be swapped as part of reclaim? */
+	/* Can pages be 
+	ed as part of reclaim? */
 	unsigned int may_swap:1;
 
 	unsigned int hibernation_mode:1;
@@ -143,7 +144,7 @@ struct scan_control {
 /*
  * From 0 .. 100.  Higher means more swappy.
  */
-int vm_swappiness = 1;
+int vm_swappiness = 60;
 /*
  * The total number of pages which are beyond the high watermark within all
  * zones.
