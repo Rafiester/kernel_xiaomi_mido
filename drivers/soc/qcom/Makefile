@@ -117,4 +117,3 @@ subdir-ccflags-y += \
 	-Wno-ignored-attributes \
 	-Wno-gcc-compat \
 	-Wno-enum-conversion
->>>>>>> f6c5addf1a35e... wahoo: Add state notifier driver
