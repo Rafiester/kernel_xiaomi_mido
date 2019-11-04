@@ -10,8 +10,6 @@
 #include <linux/fb.h>
 #include <linux/input.h>
 
-<<<<<<< HEAD
-=======
 
 static unsigned int msm_cpubw_boost_freq = CONFIG_DEVFREQ_MSM_CPUBW_BOOST_FREQ;
 static unsigned short input_boost_duration = CONFIG_DEVFREQ_INPUT_BOOST_DURATION_MS;
@@ -19,22 +17,6 @@ static unsigned short input_boost_duration = CONFIG_DEVFREQ_INPUT_BOOST_DURATION
 module_param(msm_cpubw_boost_freq, uint, 0644);
 module_param(input_boost_duration, short, 0644);
 
-struct boost_dev {
-	struct workqueue_struct *wq;
-	struct devfreq *df;
-	struct work_struct input_boost;
-	struct delayed_work input_unboost;
-	struct work_struct max_boost;
-	struct delayed_work max_unboost;
-	unsigned long abs_min_freq;
-	unsigned long boost_freq;
-	unsigned long max_boost_expires;
-	unsigned long max_boost_jiffies;
-	bool disable;
-	spinlock_t lock;
-};
-
->>>>>>> ce4c89fa8295... devfreq_boost: expose devfreq input boost freq and duration to userspace
 struct df_boost_drv {
 	struct boost_dev devices[DEVFREQ_MAX];
 	struct notifier_block fb_notif;
