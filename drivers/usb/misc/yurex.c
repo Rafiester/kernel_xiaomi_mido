@@ -426,9 +426,9 @@ static ssize_t yurex_read(struct file *file, char *buffer, size_t count, loff_t 
 	dev = file->private_data;
 
 	mutex_lock(&dev->io_mutex);
-	if (dev->disconnected) {		/* already disconnected */
-		mutex_unlock(&dev->io_mutex);
-		return -ENODEV;
+	if (!dev->disconnected) {		/* already disconnected */
+		retval = -ENODEV;
+		goto exit;
 	}
 
 	spin_lock_irqsave(&dev->lock, flags);
