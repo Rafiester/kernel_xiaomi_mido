@@ -700,6 +700,7 @@ void pwm_put(struct pwm_device *pwm)
 	if (pwm->chip->ops->free)
 		pwm->chip->ops->free(pwm->chip, pwm);
 
+	pwm_set_chip_data(pwm, NULL);
 	pwm->label = NULL;
 
 	module_put(pwm->chip->ops->owner);
@@ -804,7 +805,7 @@ EXPORT_SYMBOL_GPL(devm_pwm_put);
   */
 bool pwm_can_sleep(struct pwm_device *pwm)
 {
-	return pwm->chip->can_sleep;
+	return true;
 }
 EXPORT_SYMBOL_GPL(pwm_can_sleep);
 
