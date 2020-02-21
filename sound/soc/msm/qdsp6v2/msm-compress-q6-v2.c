@@ -3101,27 +3101,6 @@ static int msm_compr_audio_effects_config_get(struct snd_kcontrol *kcontrol,
 	struct msm_compr_audio *prtd = NULL;
 	long *values = &(ucontrol->value.integer.value[0]);
 
-	pr_debug("%s\n", __func__);
-	if (fe_id >= MSM_FRONTEND_DAI_MAX) {
-		pr_err("%s Received out of bounds fe_id %lu\n",
-			__func__, fe_id);
-		return -EINVAL;
-	}
-	mutex_lock(&pdata->lock);
-	cstream = pdata->cstream[fe_id];
-	audio_effects = pdata->audio_effects[fe_id];
-	if (!cstream || !audio_effects) {
-		pr_err("%s: stream or effects inactive\n", __func__);
-		ret = -EINVAL;
-		goto done;
-	}
-	prtd = cstream->runtime->private_data;
-	if (!prtd) {
-		pr_err("%s: cannot set audio effects\n", __func__);
-		ret = -EINVAL;
-		goto done;
-	}
-
 	switch (audio_effects->query.mod_id) {
 	case DTS_EAGLE_MODULE:
 		pr_debug("%s: DTS_EAGLE_MODULE handling queued get\n",
